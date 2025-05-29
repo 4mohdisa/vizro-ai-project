@@ -1,0 +1,5 @@
+.env
+venv/
+property_data.csv
+Real_Estate_Sales_2001-2022_GL.csv
+*.csv
