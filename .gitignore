@@ -1,2 +1,4 @@
 .env
 venv/
+property_data.csv
+property_dashboard.py

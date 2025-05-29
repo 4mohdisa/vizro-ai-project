@@ -194,14 +194,15 @@ except Exception as e:
     print(f"\n⚠️ Vizro-AI dashboard generation failed:\n{e}")
     print("Falling back to manual dashboard creation...")
 
-# Create a more organized dashboard with improved layout
+# Create a more organized dashboard with improved layout and grid system
 fallback_dashboard = vm.Dashboard(
     title="Real Estate Market Analytics",
     pages=[
+        # First page - Market Overview with key metrics
         vm.Page(
             title="Market Overview",
             components=[
-                # Row 1: Distribution charts
+                # Row 1: Distribution charts (side by side)
                 vm.Graph(
                     id="pie_chart", 
                     title="Properties by Type",
@@ -210,6 +211,10 @@ fallback_dashboard = vm.Dashboard(
                         color="property_type",
                         hole=0.3,
                         color_discrete_sequence=px.colors.qualitative.Pastel
+                    ).update_layout(
+                        legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
+                        margin=dict(l=20, r=20, t=40, b=20),
+                        height=350
                     )
                 ),
                 vm.Graph(
@@ -221,10 +226,13 @@ fallback_dashboard = vm.Dashboard(
                         color="status",
                         text="count",
                         color_discrete_sequence=px.colors.qualitative.Bold
+                    ).update_layout(
+                        margin=dict(l=20, r=20, t=40, b=20),
+                        height=350
                     )
                 ),
                 
-                # Row 2: Price analysis charts
+                # Row 2: Price analysis charts (side by side)
                 vm.Graph(
                     id="price_by_type", 
                     title="Average Price by Property Type",
@@ -233,8 +241,11 @@ fallback_dashboard = vm.Dashboard(
                         x="property_type", y="price",
                         color="property_type",
                         text_auto='.2s',
-                        labels={"price": "Average Price ($)"},
+                        labels={"price": "Average Price ($)", "property_type": "Property Type"},
                         color_discrete_sequence=px.colors.qualitative.Pastel
+                    ).update_layout(
+                        margin=dict(l=20, r=20, t=40, b=20),
+                        height=350
                     )
                 ),
                 vm.Graph(
@@ -243,12 +254,15 @@ fallback_dashboard = vm.Dashboard(
                     figure=px.box(
                         df, x="area", y="price",
                         color="area",
-                        labels={"price": "Price ($)"},
+                        labels={"price": "Price ($)", "area": "Area"},
                         color_discrete_sequence=px.colors.qualitative.Bold
+                    ).update_layout(
+                        margin=dict(l=20, r=20, t=40, b=20),
+                        height=350
                     )
                 ),
                 
-                # Row 3: Time series analysis
+                # Row 3: Time series analysis (full width)
                 vm.Graph(
                     id="time_series", 
                     title="Listings Over Time",
@@ -258,10 +272,27 @@ fallback_dashboard = vm.Dashboard(
                         labels={"listing_date": "Month", "count": "Number of Listings"},
                         markers=True,
                         line_shape="spline"
-                    ).update_traces(line=dict(width=3))
-                ),
-                
-                # Row 4: Interactive scatter plot
+                    ).update_traces(
+                        line=dict(width=3)
+                    ).update_layout(
+                        margin=dict(l=20, r=20, t=40, b=20),
+                        height=350
+                    )
+                )
+            ],
+            controls=[
+                vm.Filter(column="property_type"),
+                vm.Filter(column="status"),
+                vm.Filter(column="area"),
+                vm.Filter(column="agent_name")
+            ]
+        ),
+        
+        # Second page - Detailed Analysis with more complex visualizations
+        vm.Page(
+            title="Detailed Analysis",
+            components=[
+                # Interactive scatter plot (full width)
                 vm.Graph(
                     id="property_scatter", 
                     title="Property Price vs. Size",
@@ -273,19 +304,62 @@ fallback_dashboard = vm.Dashboard(
                         labels={"square_meters": "Size (sq. meters)", "price": "Price ($)"},
                         opacity=0.7,
                         color_discrete_sequence=px.colors.qualitative.Pastel
+                    ).update_layout(
+                        legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
+                        margin=dict(l=20, r=20, t=40, b=20),
+                        height=400
                     )
                 ),
                 
-                # Row 5: Data table for detailed property listings
+                # Price heatmap by area and property type
+                vm.Graph(
+                    id="price_heatmap", 
+                    title="Average Price Heatmap",
+                    figure=px.density_heatmap(
+                        df, x="property_type", y="area", z="price", 
+                        histfunc="avg",
+                        labels={"property_type": "Property Type", "area": "Area", "price": "Avg Price ($)"},
+                        color_continuous_scale=px.colors.sequential.Viridis
+                    ).update_layout(
+                        margin=dict(l=20, r=20, t=40, b=20),
+                        height=350
+                    )
+                ),
+                
+                # Bedrooms distribution chart
+                vm.Graph(
+                    id="bedrooms_chart", 
+                    title="Bedrooms Distribution by Property Type",
+                    figure=px.histogram(
+                        df, x="bedrooms", color="property_type",
+                        barmode="group",
+                        labels={"bedrooms": "Number of Bedrooms", "count": "Number of Properties"},
+                        color_discrete_sequence=px.colors.qualitative.Pastel
+                    ).update_layout(
+                        legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
+                        margin=dict(l=20, r=20, t=40, b=20),
+                        height=350
+                    )
+                ),
+                
+                # Data table visualization (using scatter plot with hover data)
                 vm.Graph(
                     id="property_data", 
-                    title="Property Listings",
+                    title="Property Listings Details",
                     figure=px.scatter(
                         df, x="property_type", y="price",
                         color="status",
-                        hover_data=["agent_name", "location", "bedrooms", "bathrooms", "square_meters", "listing_date"],
+                        size="square_meters",
+                        hover_data=[
+                            "agent_name", "location", "area", "neighborhood", 
+                            "bedrooms", "bathrooms", "square_meters", 
+                            "listing_date", "sale_date", "price_per_sqm"
+                        ],
                         labels={"property_type": "Type", "price": "Price ($)"},
                         color_discrete_sequence=px.colors.qualitative.Bold
+                    ).update_layout(
+                        margin=dict(l=20, r=20, t=40, b=20),
+                        height=400
                     )
                 )
             ],
@@ -293,8 +367,8 @@ fallback_dashboard = vm.Dashboard(
                 vm.Filter(column="property_type"),
                 vm.Filter(column="status"),
                 vm.Filter(column="area"),
-                vm.Filter(column="agent_name"),
-                vm.Filter(column="bedrooms")
+                vm.Filter(column="bedrooms"),
+                vm.Filter(column="bathrooms")
             ]
         )
     ]
