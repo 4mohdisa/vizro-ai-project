@@ -1,0 +1,33 @@
+.table-container,
+.dash-graph {
+  flex: 1 1 auto;
+  overflow: auto;
+  width: 100%;
+}
+
+.figure-title,
+.figure-header,
+.figure-footer {
+  align-items: center;
+  display: flex;
+  flex: 0 1 auto;
+  gap: 8px;
+}
+
+.figure-footer {
+  padding-top: 0.75rem;
+}
+
+.figure-footer a {
+  font-size: inherit;
+}
+
+/* Improve footnote of plotly maps */
+.maplibregl-ctrl {
+  display: flex;
+}
+
+/* Fixes flickering scroll-bar when using new plotly maps: https://github.com/mckinsey/vizro/pull/984 */
+.js-plotly-plot {
+  overflow: hidden;
+}

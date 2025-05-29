@@ -1,0 +1,101 @@
+property_type,price,status,agent_name,listing_date,sale_date,location,area,neighborhood,bedrooms,bathrooms,square_meters,price_per_sqm
+House,485356,Under Contract,Emma Davis,2025-02-07 20:05:01.239033,,Downtown - Central District,Downtown,Central District,4,2,285,1703.0
+Apartment,326137,Sold,Sarah Johnson,2025-01-05 20:05:01.239033,2025-02-16 20:05:01.239033,Uptown - University Area,Uptown,University Area,1,2,83,3929.36
+Apartment,551998,Under Contract,James Harris,2025-03-06 20:05:01.239033,,Westside - Golden Gate,Westside,Golden Gate,3,1,74,7459.43
+House,654020,Sold,Michael Brown,2025-04-18 20:05:01.239033,2025-05-27 20:05:01.239033,Suburbs - Greenfield,Suburbs,Greenfield,3,2,240,2725.08
+House,492366,Listed,James Harris,2024-11-03 20:05:01.239033,,Westside - Ocean View,Westside,Ocean View,5,4,169,2913.41
+House,569992,Sold,Olivia Garcia,2024-11-03 20:05:01.239033,2024-12-01 20:05:01.239033,Suburbs - Pleasant Valley,Suburbs,Pleasant Valley,2,3,141,4042.5
+Condo,534949,Sold,Jessica Martinez,2025-01-22 20:05:01.239033,2025-03-12 20:05:01.239033,Downtown - Central District,Downtown,Central District,1,2,77,6947.39
+Apartment,568632,Under Contract,Jennifer Anderson,2024-07-02 20:05:01.239033,,Downtown - Harbor View,Downtown,Harbor View,3,2,69,8241.04
+Apartment,660732,Listed,Robert Taylor,2024-09-04 20:05:01.239033,,Uptown - North Hills,Uptown,North Hills,3,1,70,9439.03
+Townhouse,670788,Sold,Thomas White,2024-12-28 20:05:01.239033,2025-03-11 20:05:01.239033,Suburbs - Greenfield,Suburbs,Greenfield,2,3,186,3606.39
+Condo,349010,Listed,Lisa Moore,2025-02-28 20:05:01.239033,,Downtown - Harbor View,Downtown,Harbor View,1,1,128,2726.64
+Condo,878897,Listed,Jessica Martinez,2025-02-03 20:05:01.239033,,Uptown - Parkside,Uptown,Parkside,1,1,101,8701.95
+House,781056,Listed,David Wilson,2025-03-22 20:05:01.239033,,Westside - Golden Gate,Westside,Golden Gate,6,2,327,2388.55
+Apartment,381859,Sold,Jessica Martinez,2024-06-16 20:05:01.239033,2024-08-23 20:05:01.239033,Eastside - Lakefront,Eastside,Lakefront,1,1,127,3006.76
+Condo,606316,Sold,Daniel Thompson,2025-05-17 20:05:01.239033,2025-05-21 20:05:01.239033,Westside - Golden Gate,Westside,Golden Gate,2,2,166,3652.51
+Villa,600000,Under Contract,Michael Brown,2024-12-15 20:05:01.239033,,Eastside - Highland Park,Eastside,Highland Park,3,3,412,1456.31
+Villa,1130594,Listed,Jennifer Anderson,2024-08-25 20:05:01.239033,,Suburbs - Pleasant Valley,Suburbs,Pleasant Valley,5,4,298,3793.94
+House,975852,Pending,Jessica Martinez,2025-03-02 20:05:01.239033,,Eastside - Lakefront,Eastside,Lakefront,3,3,248,3934.89
+House,840697,Sold,Jessica Martinez,2025-01-10 20:05:01.239033,2025-03-10 20:05:01.239033,Uptown - Parkside,Uptown,Parkside,4,3,303,2774.58
+Condo,553440,Listed,James Harris,2024-09-17 20:05:01.239033,,Suburbs - Oak Ridge,Suburbs,Oak Ridge,2,2,118,4690.17
+Apartment,495547,Sold,Emily Clark,2025-03-21 20:05:01.239033,2025-05-26 20:05:01.239033,Downtown - Central District,Downtown,Central District,1,1,122,4061.86
+Condo,468555,Listed,David Wilson,2024-09-30 20:05:01.239033,,Suburbs - Greenfield,Suburbs,Greenfield,1,2,73,6418.56
+House,934135,Under Contract,Jennifer Anderson,2024-10-04 20:05:01.239033,,Eastside - Riverside,Eastside,Riverside,4,1,233,4009.16
+House,400000,Sold,Daniel Thompson,2024-12-26 20:05:01.239033,2025-02-04 20:05:01.239033,Westside - Sunset,Westside,Sunset,3,4,251,1593.63
+House,802544,Under Contract,Thomas White,2025-02-20 20:05:01.239033,,Westside - Golden Gate,Westside,Golden Gate,3,2,124,6472.13
+Apartment,433652,Sold,Jessica Martinez,2025-01-02 20:05:01.239033,2025-02-15 20:05:01.239033,Uptown - Parkside,Uptown,Parkside,3,1,128,3387.91
+Villa,600000,Listed,Jessica Martinez,2024-11-08 20:05:01.239033,,Eastside - Highland Park,Eastside,Highland Park,6,4,410,1463.41
+Townhouse,616264,Listed,Michael Brown,2024-10-19 20:05:01.239033,,Westside - Golden Gate,Westside,Golden Gate,4,1,167,3690.2
+House,638064,Under Contract,Lisa Moore,2024-08-12 20:05:01.239033,,Uptown - North Hills,Uptown,North Hills,2,1,137,4657.4
+Apartment,339300,Listed,Michael Brown,2024-09-30 20:05:01.239033,,Westside - Golden Gate,Westside,Golden Gate,2,1,100,3393.0
+Apartment,577834,Under Contract,Robert Taylor,2024-12-21 20:05:01.239033,,Westside - Sunset,Westside,Sunset,1,2,120,4815.28
+Townhouse,695841,Listed,Olivia Garcia,2025-05-18 20:05:01.239033,,Suburbs - Greenfield,Suburbs,Greenfield,4,1,136,5116.48
+Townhouse,414462,Sold,Sophia Lee,2025-03-29 20:05:01.239033,2025-05-14 20:05:01.239033,Eastside - Riverside,Eastside,Riverside,2,2,136,3047.51
+House,840070,Sold,James Harris,2025-03-04 20:05:01.239033,2025-05-02 20:05:01.239033,Uptown - Parkside,Uptown,Parkside,3,2,207,4058.31
+Apartment,270577,Listed,Thomas White,2025-01-21 20:05:01.239033,,Uptown - University Area,Uptown,University Area,1,1,124,2182.07
+House,443407,Sold,Emma Davis,2025-01-16 20:05:01.239033,2025-03-02 20:05:01.239033,Suburbs - Pleasant Valley,Suburbs,Pleasant Valley,3,1,194,2285.6
+Apartment,692463,Sold,Jessica Martinez,2025-01-25 20:05:01.239033,2025-03-26 20:05:01.239033,Westside - Ocean View,Westside,Ocean View,1,2,117,5918.49
+House,452923,Sold,Emma Davis,2025-04-07 20:05:01.239033,2025-05-13 20:05:01.239033,Eastside - Highland Park,Eastside,Highland Park,3,1,308,1470.53
+House,795076,Listed,David Wilson,2024-11-12 20:05:01.239033,,Uptown - North Hills,Uptown,North Hills,3,4,226,3518.04
+Apartment,250000,Sold,Thomas White,2025-02-28 20:05:01.239033,2025-04-21 20:05:01.239033,Suburbs - Greenfield,Suburbs,Greenfield,2,1,71,3521.13
+Townhouse,435153,Listed,Daniel Thompson,2024-08-18 20:05:01.239033,,Westside - Ocean View,Westside,Ocean View,4,2,139,3130.6
+Townhouse,503169,Listed,James Harris,2025-04-12 20:05:01.239033,,Downtown - Financial Quarter,Downtown,Financial Quarter,3,1,138,3646.15
+Villa,1159061,Sold,Emma Davis,2024-12-10 20:05:01.239033,2025-01-01 20:05:01.239033,Uptown - North Hills,Uptown,North Hills,5,2,295,3929.02
+Condo,900000,Listed,Jennifer Anderson,2024-10-24 20:05:01.239033,,Westside - Ocean View,Westside,Ocean View,2,1,138,6521.74
+House,515686,Sold,Olivia Garcia,2024-10-11 20:05:01.239033,2024-12-09 20:05:01.239033,Suburbs - Greenfield,Suburbs,Greenfield,2,4,345,1494.74
+Townhouse,663867,Pending,Thomas White,2025-04-03 20:05:01.239033,,Westside - Sunset,Westside,Sunset,2,3,132,5029.3
+Townhouse,495259,Pending,Emma Davis,2024-11-17 20:05:01.239033,,Suburbs - Oak Ridge,Suburbs,Oak Ridge,4,3,137,3615.03
+House,400000,Sold,John Smith,2024-08-08 20:05:01.239033,2024-09-06 20:05:01.239033,Uptown - University Area,Uptown,University Area,2,3,221,1809.95
+Townhouse,584878,Listed,Robert Taylor,2024-12-28 20:05:01.239033,,Uptown - Parkside,Uptown,Parkside,3,3,122,4794.08
+Apartment,494534,Sold,Jessica Martinez,2024-11-19 20:05:01.239033,2024-12-14 20:05:01.239033,Downtown - Harbor View,Downtown,Harbor View,3,1,147,3364.18
+House,636894,Listed,Emily Clark,2025-04-13 20:05:01.239033,,Westside - Ocean View,Westside,Ocean View,2,1,291,2188.64
+House,1116778,Listed,Michael Brown,2025-03-24 20:05:01.239033,,Eastside - Lakefront,Eastside,Lakefront,5,2,168,6647.49
+Townhouse,592653,Listed,Emily Clark,2024-09-11 20:05:01.239033,,Eastside - Riverside,Eastside,Riverside,4,1,130,4558.87
+Apartment,600667,Pending,Jessica Martinez,2025-01-12 20:05:01.239033,,Eastside - Lakefront,Eastside,Lakefront,1,1,129,4656.33
+Condo,585986,Sold,David Wilson,2025-05-22 20:05:01.239033,2025-05-21 20:05:01.239033,Uptown - Parkside,Uptown,Parkside,1,1,82,7146.17
+Apartment,447300,Under Contract,Daniel Thompson,2024-11-29 20:05:01.239033,,Eastside - Riverside,Eastside,Riverside,3,2,147,3042.86
+Apartment,455510,Listed,Daniel Thompson,2025-02-19 20:05:01.239033,,Downtown - Central District,Downtown,Central District,2,1,87,5235.75
+Townhouse,917024,Listed,James Harris,2025-02-10 20:05:01.239033,,Suburbs - Greenfield,Suburbs,Greenfield,2,2,106,8651.17
+House,666551,Sold,Thomas White,2024-12-31 20:05:01.239033,2025-02-26 20:05:01.239033,Suburbs - Oak Ridge,Suburbs,Oak Ridge,4,1,131,5088.18
+Condo,625753,Sold,David Wilson,2025-01-05 20:05:01.239033,2025-03-26 20:05:01.239033,Uptown - Parkside,Uptown,Parkside,3,1,104,6016.86
+Villa,1454981,Sold,Emily Clark,2025-02-28 20:05:01.239033,2025-04-01 20:05:01.239033,Downtown - Harbor View,Downtown,Harbor View,4,3,493,2951.28
+Apartment,485426,Under Contract,Thomas White,2025-02-20 20:05:01.239033,,Uptown - North Hills,Uptown,North Hills,2,1,149,3257.89
+House,1166455,Listed,Jessica Martinez,2025-04-04 20:05:01.239033,,Uptown - University Area,Uptown,University Area,4,2,335,3481.96
+House,400000,Under Contract,Emma Davis,2025-03-21 20:05:01.239033,,Uptown - Parkside,Uptown,Parkside,3,3,307,1302.93
+Townhouse,606080,Sold,Jennifer Anderson,2025-03-13 20:05:01.239033,2025-04-05 20:05:01.239033,Uptown - North Hills,Uptown,North Hills,4,2,156,3885.13
+House,681903,Pending,Thomas White,2025-01-29 20:05:01.239033,,Suburbs - Oak Ridge,Suburbs,Oak Ridge,6,3,156,4371.17
+Villa,1341445,Under Contract,Emma Davis,2024-06-20 20:05:01.239033,,Suburbs - Pleasant Valley,Suburbs,Pleasant Valley,3,2,422,3178.78
+House,400000,Listed,Thomas White,2025-04-14 20:05:01.239033,,Suburbs - Oak Ridge,Suburbs,Oak Ridge,2,3,169,2366.86
+Apartment,778161,Under Contract,Jennifer Anderson,2024-09-18 20:05:01.239033,,Suburbs - Oak Ridge,Suburbs,Oak Ridge,3,1,136,5721.77
+Townhouse,577044,Sold,John Smith,2025-03-05 20:05:01.239033,2025-04-27 20:05:01.239033,Downtown - Harbor View,Downtown,Harbor View,4,2,166,3476.17
+Townhouse,540800,Listed,Emma Davis,2024-12-22 20:05:01.239033,,Uptown - Parkside,Uptown,Parkside,3,2,179,3021.23
+Apartment,404636,Sold,Jessica Martinez,2024-11-15 20:05:01.239033,2025-01-09 20:05:01.239033,Westside - Ocean View,Westside,Ocean View,3,2,119,3400.3
+Apartment,516380,Under Contract,Sarah Johnson,2025-03-13 20:05:01.239033,,Westside - Golden Gate,Westside,Golden Gate,2,2,60,8606.33
+Condo,554759,Listed,Sophia Lee,2025-05-08 20:05:01.239033,,Downtown - Financial Quarter,Downtown,Financial Quarter,2,2,97,5719.16
+Apartment,536508,Listed,Jessica Martinez,2024-11-22 20:05:01.239033,,Suburbs - Greenfield,Suburbs,Greenfield,3,1,73,7349.42
+Apartment,406582,Sold,Emma Davis,2024-11-07 20:05:01.239033,2025-01-31 20:05:01.239033,Uptown - North Hills,Uptown,North Hills,1,1,81,5019.53
+House,1351732,Under Contract,John Smith,2024-08-19 20:05:01.239033,,Uptown - Parkside,Uptown,Parkside,3,2,147,9195.46
+House,1174566,Pending,Michael Brown,2025-05-02 20:05:01.239033,,Downtown - Financial Quarter,Downtown,Financial Quarter,2,3,166,7075.7
+Apartment,541096,Under Contract,James Harris,2024-06-29 20:05:01.239033,,Downtown - Financial Quarter,Downtown,Financial Quarter,2,1,148,3656.05
+Apartment,446492,Sold,Michael Brown,2025-03-15 20:05:01.239033,2025-04-09 20:05:01.239033,Suburbs - Greenfield,Suburbs,Greenfield,3,1,107,4172.82
+Apartment,267274,Listed,David Wilson,2025-02-27 20:05:01.239033,,Downtown - Harbor View,Downtown,Harbor View,1,2,72,3712.14
+House,1234911,Under Contract,John Smith,2025-05-02 20:05:01.239033,,Eastside - Highland Park,Eastside,Highland Park,3,3,221,5587.83
+House,833102,Sold,Sophia Lee,2025-03-11 20:05:01.239033,2025-04-16 20:05:01.239033,Uptown - Parkside,Uptown,Parkside,5,3,328,2539.95
+Apartment,346372,Sold,Emily Clark,2025-04-22 20:05:01.239033,2025-05-23 20:05:01.239033,Suburbs - Pleasant Valley,Suburbs,Pleasant Valley,3,2,136,2546.85
+House,508000,Sold,Jessica Martinez,2024-12-10 20:05:01.239033,2025-01-02 20:05:01.239033,Uptown - University Area,Uptown,University Area,3,2,161,3155.28
+Apartment,502036,Sold,Sophia Lee,2025-01-30 20:05:01.239033,2025-03-18 20:05:01.239033,Suburbs - Greenfield,Suburbs,Greenfield,2,1,70,7171.94
+House,427498,Sold,Michael Brown,2025-05-15 20:05:01.239033,2025-05-27 20:05:01.239033,Downtown - Central District,Downtown,Central District,2,2,210,2035.7
+Apartment,471098,Pending,James Harris,2024-08-26 20:05:01.239033,,Suburbs - Greenfield,Suburbs,Greenfield,2,2,148,3183.09
+House,612327,Sold,David Wilson,2024-12-14 20:05:01.239033,2025-01-31 20:05:01.239033,Westside - Ocean View,Westside,Ocean View,4,2,332,1844.36
+Townhouse,521720,Under Contract,Sophia Lee,2024-10-09 20:05:01.239033,,Suburbs - Pleasant Valley,Suburbs,Pleasant Valley,3,1,106,4921.89
+Townhouse,594383,Sold,Lisa Moore,2024-09-08 20:05:01.239033,2024-11-05 20:05:01.239033,Westside - Golden Gate,Westside,Golden Gate,3,1,191,3111.95
+House,766363,Pending,William Rodriguez,2025-04-28 20:05:01.239033,,Downtown - Central District,Downtown,Central District,3,1,138,5553.36
+House,1091035,Sold,Sarah Johnson,2025-04-16 20:05:01.239033,2025-05-20 20:05:01.239033,Westside - Golden Gate,Westside,Golden Gate,2,1,122,8942.91
+House,902007,Sold,Jessica Martinez,2025-02-10 20:05:01.239033,2025-03-06 20:05:01.239033,Suburbs - Oak Ridge,Suburbs,Oak Ridge,6,3,202,4465.38
+House,751215,Pending,Jennifer Anderson,2024-10-09 20:05:01.239033,,Eastside - Riverside,Eastside,Riverside,4,1,284,2645.12
+Apartment,259599,Sold,Sarah Johnson,2024-12-17 20:05:01.239033,2025-02-03 20:05:01.239033,Suburbs - Oak Ridge,Suburbs,Oak Ridge,1,2,94,2761.69
+Townhouse,551518,Under Contract,Lisa Moore,2025-02-15 20:05:01.239033,,Suburbs - Oak Ridge,Suburbs,Oak Ridge,2,2,168,3282.85
+Condo,501529,Sold,Lisa Moore,2025-01-28 20:05:01.239033,2025-04-03 20:05:01.239033,Westside - Sunset,Westside,Sunset,1,1,98,5117.64
+Apartment,431328,Sold,William Rodriguez,2024-07-14 20:05:01.239033,2024-09-30 20:05:01.239033,Eastside - Riverside,Eastside,Riverside,1,1,79,5459.85
+Apartment,409464,Listed,Lisa Moore,2024-11-24 20:05:01.239033,,Eastside - Lakefront,Eastside,Lakefront,1,2,143,2863.38
