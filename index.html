@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Dashboard Builder</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        .drag-area {
+            border: 2px dashed #4299e1;
+            border-radius: 0.5rem;
+            transition: all 0.3s ease;
+        }
+        .drag-area.active {
+            border-color: #2b6cb0;
+            background-color: rgba(66, 153, 225, 0.1);
+        }
+        .chart-option:checked + label {
+            border-color: #4299e1;
+            background-color: rgba(66, 153, 225, 0.1);
+        }
+        .progress-bar {
+            height: 6px;
+            background-color: #4299e1;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+        .preview-table {
+            display: block;
+            overflow-x: auto;
+            white-space: nowrap;
+        }
+        .preview-table th, .preview-table td {
+            padding: 0.5rem;
+            border: 1px solid #e2e8f0;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <header class="bg-white shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 py-4 sm:px-6 lg:px-8">
+            <h1 class="text-2xl font-bold text-gray-900">AI Dashboard Builder</h1>
+            <p class="text-gray-600">Create beautiful data visualizations with AI assistance</p>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 py-6 sm:px-6 lg:px-8">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <!-- Left Column: Data Upload -->
+            <div class="bg-white p-6 rounded-lg shadow-md">
+                <h2 class="text-lg font-semibold mb-4">1. Upload Your Data</h2>
+                
+                <!-- File Upload Area -->
+                <div id="drag-area" class="drag-area p-8 text-center cursor-pointer mb-4">
+                    <div class="mb-3">
+                        <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48">
+                            <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                    </div>
+                    <p class="text-gray-700 mb-2">Drag and drop your CSV file here</p>
+                    <p class="text-gray-500 text-sm">or</p>
+                    <input type="file" id="file-input" class="hidden" accept=".csv">
+                    <button id="browse-btn" class="mt-2 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        Browse Files
+                    </button>
+                    <p class="text-xs text-gray-500 mt-2">Maximum file size: 10MB</p>
+                </div>
+                
+                <!-- Upload Progress -->
+                <div id="upload-progress-container" class="mb-4 hidden">
+                    <div class="flex justify-between text-sm text-gray-600 mb-1">
+                        <span>Uploading...</span>
+                        <span id="upload-percentage">0%</span>
+                    </div>
+                    <div class="bg-gray-200 rounded-full overflow-hidden">
+                        <div id="upload-progress-bar" class="progress-bar"></div>
+                    </div>
+                </div>
+                
+                <!-- File Information -->
+                <div id="file-info" class="hidden mb-4 p-3 bg-blue-50 rounded border border-blue-200">
+                    <div class="flex items-start">
+                        <svg class="h-5 w-5 text-blue-400 mt-0.5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z" clip-rule="evenodd" />
+                        </svg>
+                        <div>
+                            <p id="file-name" class="text-sm font-medium text-gray-900"></p>
+                            <p id="file-size" class="text-xs text-gray-500"></p>
+                            <p id="file-rows" class="text-xs text-gray-500"></p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Data Preview -->
+                <div id="data-preview-container" class="hidden">
+                    <h3 class="text-md font-medium mb-2">Data Preview</h3>
+                    <div class="preview-table-container overflow-x-auto">
+                        <table id="preview-table" class="preview-table min-w-full text-xs">
+                            <!-- Table content will be inserted here -->
+                        </table>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Middle Column: Chart Selection -->
+            <div class="bg-white p-6 rounded-lg shadow-md">
+                <h2 class="text-lg font-semibold mb-4">2. Select Visualizations</h2>
+                
+                <!-- Chart Types -->
+                <div class="mb-6">
+                    <h3 class="text-md font-medium mb-3">Chart Types</h3>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div class="relative">
+                            <input type="checkbox" id="bar-chart" name="chart-types" value="bar" class="chart-option hidden">
+                            <label for="bar-chart" class="flex flex-col items-center p-3 border rounded-lg cursor-pointer hover:bg-gray-50">
+                                <svg class="h-8 w-8 text-gray-400 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <rect x="3" y="12" width="3" height="8" rx="1" stroke-width="2" />
+                                    <rect x="9" y="8" width="3" height="12" rx="1" stroke-width="2" />
+                                    <rect x="15" y="4" width="3" height="16" rx="1" stroke-width="2" />
+                                    <rect x="21" y="10" width="3" height="10" rx="1" stroke-width="2" transform="translate(45 0) scale(-1 1)" />
+                                </svg>
+                                <span class="text-sm font-medium text-gray-900">Bar Chart</span>
+                            </label>
+                        </div>
+                        <div class="relative">
+                            <input type="checkbox" id="line-chart" name="chart-types" value="line" class="chart-option hidden">
+                            <label for="line-chart" class="flex flex-col items-center p-3 border rounded-lg cursor-pointer hover:bg-gray-50">
+                                <svg class="h-8 w-8 text-gray-400 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path d="M3 12h.01M7 19h.01M12 12h.01M16 6h.01M21 12h.01" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                                    <path d="M3 12l4 7 5-7 4-6 5 6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                                </svg>
+                                <span class="text-sm font-medium text-gray-900">Line Chart</span>
+                            </label>
+                        </div>
+                        <div class="relative">
+                            <input type="checkbox" id="pie-chart" name="chart-types" value="pie" class="chart-option hidden">
+                            <label for="pie-chart" class="flex flex-col items-center p-3 border rounded-lg cursor-pointer hover:bg-gray-50">
+                                <svg class="h-8 w-8 text-gray-400 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path d="M12 2v10m0 0l8.6 8.6a12 12 0 01-17.2 0L12 12z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                                    <path d="M12 12l8.6-8.6a12 12 0 00-17.2 0L12 12z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                                </svg>
+                                <span class="text-sm font-medium text-gray-900">Pie Chart</span>
+                            </label>
+                        </div>
+                        <div class="relative">
+                            <input type="checkbox" id="scatter-chart" name="chart-types" value="scatter" class="chart-option hidden">
+                            <label for="scatter-chart" class="flex flex-col items-center p-3 border rounded-lg cursor-pointer hover:bg-gray-50">
+                                <svg class="h-8 w-8 text-gray-400 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path d="M5 7v.01M7 13v.01M11 5v.01M13 15v.01M17 7v.01M19 13v.01" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+                                </svg>
+                                <span class="text-sm font-medium text-gray-900">Scatter Plot</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Layout Options -->
+                <div class="mb-6">
+                    <h3 class="text-md font-medium mb-3">Dashboard Layout</h3>
+                    <p class="text-sm text-gray-600 mb-2">Your dashboard will be created with a fixed layout:</p>
+                    <ul class="text-sm text-gray-600 list-disc pl-5 mb-2">
+                        <li>2 charts per row</li>
+                        <li>2 rows of charts (4 charts total)</li>
+                        <li>Single page dashboard</li>
+                    </ul>
+                    <input id="grid-layout" name="layout" type="hidden" value="grid">
+                    <input id="grid-columns" type="hidden" value="2">
+                </div>
+                
+                <!-- Generate Button -->
+                <button id="generate-btn" class="w-full px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                    Generate Dashboard
+                </button>
+            </div>
+            
+            <!-- Right Column: Preview -->
+            <div class="bg-white p-6 rounded-lg shadow-md">
+                <h2 class="text-lg font-semibold mb-4">3. Dashboard Preview</h2>
+                
+                <!-- Initial State -->
+                <div id="preview-placeholder" class="flex flex-col items-center justify-center h-64 border-2 border-dashed border-gray-300 rounded-lg">
+                    <svg class="h-12 w-12 text-gray-400 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                        <path d="M4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                        <path d="M16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                    <p class="text-gray-500">Your dashboard preview will appear here</p>
+                    <p class="text-gray-400 text-sm mt-1">Upload data and select charts to get started</p>
+                </div>
+                
+                <!-- Dashboard Preview -->
+                <div id="dashboard-preview" class="hidden">
+                    <div class="bg-blue-50 p-6 rounded-lg border border-blue-200 mb-4">
+                        <div class="flex items-start">
+                            <svg class="h-6 w-6 text-blue-500 mt-0.5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                            </svg>
+                            <div>
+                                <h3 class="text-lg font-medium text-blue-800">Dashboard Generated!</h3>
+                                <p class="text-blue-700 mt-1">Your dashboard has been created with Vizro AI using your data.</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="flex flex-col space-y-4 mb-4">
+                        <a id="view-dashboard-btn" href="#" target="_blank" class="inline-flex items-center justify-center px-4 py-3 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                            <svg class="-ml-1 mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                                <path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                            </svg>
+                            View Interactive Dashboard
+                        </a>
+                        
+                        <div class="flex justify-between">
+                            <a id="share-btn" href="#" class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                                <svg class="-ml-1 mr-2 h-5 w-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                                </svg>
+                                Share Dashboard
+                            </a>
+                            <button id="export-btn" class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+                                <svg class="-ml-1 mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                                </svg>
+                                Export Dashboard
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                        <h4 class="text-sm font-medium text-gray-700 mb-2">Dashboard Features:</h4>
+                        <ul class="text-sm text-gray-600 space-y-1 pl-5 list-disc">
+                            <li>Interactive visualizations generated with Vizro AI</li>
+                            <li>2×2 grid layout with your selected chart types</li>
+                            <li>Data table with all records</li>
+                            <li>Filtering and sorting capabilities</li>
+                            <li>Export options for sharing insights</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Wait for DOM to be fully loaded
+        window.addEventListener('load', function() {
+            // DOM Elements
+            const dragArea = document.getElementById('drag-area');
+            const fileInput = document.getElementById('file-input');
+            const browseBtn = document.getElementById('browse-btn');
+            const uploadProgressContainer = document.getElementById('upload-progress-container');
+            const uploadProgressBar = document.getElementById('upload-progress-bar');
+            const uploadPercentage = document.getElementById('upload-percentage');
+            const fileInfo = document.getElementById('file-info');
+            const fileName = document.getElementById('file-name');
+            const fileSize = document.getElementById('file-size');
+            const fileRows = document.getElementById('file-rows');
+            const dataPreviewContainer = document.getElementById('data-preview-container');
+            const previewTable = document.getElementById('preview-table');
+            const generateBtn = document.getElementById('generate-btn');
+            const gridLayout = document.getElementById('grid-layout');
+            const gridColumns = document.getElementById('grid-columns');
+            const previewPlaceholder = document.getElementById('preview-placeholder');
+            const dashboardPreview = document.getElementById('dashboard-preview');
+            const dashboardIframe = document.getElementById('dashboard-iframe');
+            const viewFullBtn = document.getElementById('view-full-btn');
+            const exportBtn = document.getElementById('export-btn');
+            const chartOptions = document.querySelectorAll('.chart-option');
+            
+            // Variables
+            let csvData = null;
+            let selectedCharts = [];
+            
+            // Event Listeners
+            browseBtn.addEventListener('click', () => fileInput.click());
+            
+            fileInput.addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    handleFile(file);
+                }
+            });
+            
+            // Drag and drop events
+            ['dragover', 'dragleave', 'drop'].forEach(eventName => {
+                dragArea.addEventListener(eventName, preventDefaults, false);
+            });
+            
+            function preventDefaults(e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+            
+            dragArea.addEventListener('dragover', function() {
+                dragArea.classList.add('active');
+            });
+            
+            dragArea.addEventListener('dragleave', function() {
+                dragArea.classList.remove('active');
+            });
+            
+            dragArea.addEventListener('drop', function(e) {
+                dragArea.classList.remove('active');
+                const file = e.dataTransfer.files[0];
+                if (file) {
+                    handleFile(file);
+                }
+            });
+            
+            // Chart selection
+            chartOptions.forEach(option => {
+                option.addEventListener('change', updateGenerateButtonState);
+            });
+            
+            // Generate button
+            generateBtn.addEventListener('click', generateDashboard);
+            
+            // Functions
+            function handleFile(file) {
+                // Check if file is CSV
+                if (file.type !== 'text/csv' && !file.name.endsWith('.csv')) {
+                    alert('Please upload a CSV file');
+                    return;
+                }
+                
+                // Check file size (max 10MB)
+                if (file.size > 10 * 1024 * 1024) {
+                    alert('File size exceeds 10MB limit');
+                    return;
+                }
+                
+                // Show upload progress
+                uploadProgressContainer.classList.remove('hidden');
+                simulateUpload();
+                
+                // Read file
+                const reader = new FileReader();
+                
+                reader.onload = function(e) {
+                    csvData = e.target.result;
+                    
+                    // Display file info
+                    fileInfo.classList.remove('hidden');
+                    fileName.textContent = file.name;
+                    fileSize.textContent = formatFileSize(file.size);
+                    
+                    // Count rows
+                    const rows = csvData.split('\n').length - 1;
+                    fileRows.textContent = `${rows} rows`;
+                    
+                    // Generate preview
+                    generatePreview(csvData);
+                    
+                    // Update generate button state
+                    updateGenerateButtonState();
+                };
+                
+                reader.readAsText(file);
+            }
+            
+            function simulateUpload() {
+                let progress = 0;
+                const interval = setInterval(() => {
+                    progress += 5;
+                    uploadProgressBar.style.width = `${progress}%`;
+                    uploadPercentage.textContent = `${progress}%`;
+                    
+                    if (progress >= 100) {
+                        clearInterval(interval);
+                        setTimeout(() => {
+                            uploadProgressContainer.classList.add('hidden');
+                        }, 500);
+                    }
+                }, 50);
+            }
+            
+            function generatePreview(csvData) {
+                const rows = csvData.split('\n');
+                const headers = rows[0].split(',');
+                
+                // Create table headers
+                let tableHTML = '<thead><tr>';
+                headers.forEach(header => {
+                    tableHTML += `<th class="bg-gray-100">${header.trim()}</th>`;
+                });
+                tableHTML += '</tr></thead><tbody>';
+                
+                // Add up to 5 rows of data
+                const maxRows = Math.min(rows.length, 6);
+                for (let i = 1; i < maxRows; i++) {
+                    const cells = rows[i].split(',');
+                    tableHTML += '<tr>';
+                    cells.forEach(cell => {
+                        tableHTML += `<td>${cell.trim()}</td>`;
+                    });
+                    tableHTML += '</tr>';
+                }
+                
+                tableHTML += '</tbody>';
+                previewTable.innerHTML = tableHTML;
+                dataPreviewContainer.classList.remove('hidden');
+            }
+            
+            function updateGenerateButtonState() {
+                // Check if file is uploaded
+                const fileUploaded = csvData !== null;
+                
+                // Check if at least one chart is selected
+                selectedCharts = [];
+                chartOptions.forEach(option => {
+                    if (option.checked) {
+                        selectedCharts.push(option.value);
+                    }
+                });
+                
+                // Enable/disable generate button
+                generateBtn.disabled = !(fileUploaded && selectedCharts.length > 0);
+            }
+            
+            function generateDashboard() {
+                // Show loading state
+                generateBtn.disabled = true;
+                generateBtn.innerHTML = `
+                    <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    Generating...
+                `;
+                
+                // Limit to 4 charts maximum as per fixed layout
+                let chartSelection = [...selectedCharts];
+                if (chartSelection.length > 4) {
+                    chartSelection = chartSelection.slice(0, 4);
+                }
+                
+                // Collect configuration with fixed layout settings
+                const config = {
+                    charts: chartSelection,
+                    layout: 'grid',  // Always use grid layout
+                    columns: 2,      // Always use 2 columns
+                    data: csvData
+                };
+                
+                // Send to backend to generate dashboard with Vizro AI
+                // Use the relative URL to avoid CORS issues when running in the browser preview
+                const backendUrl = window.location.hostname === '127.0.0.1' ? 
+                    'http://127.0.0.1:8080/generate' : '/generate';
+                    
+                console.log('Sending request to:', backendUrl);
+                fetch(backendUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    credentials: 'omit',  // Don't send credentials for cross-origin requests
+                    mode: 'cors',         // Explicitly request CORS mode
+                    body: JSON.stringify(config)
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! Status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (!data.url) {
+                        throw new Error('No dashboard URL returned from server');
+                    }
+                    
+                    // Show dashboard preview section
+                    previewPlaceholder.classList.add('hidden');
+                    dashboardPreview.classList.remove('hidden');
+                    
+                    // Set dashboard URL for the view button
+                    const dashboardUrl = data.url;
+                    
+                    // Display a message about the Vizro dashboard
+                    alert('Your dashboard has been generated with Vizro AI! It will open in a new tab.');
+                    
+                    // Update the dashboard link
+                    const viewDashboardBtn = document.getElementById('view-dashboard-btn');
+                    viewDashboardBtn.href = dashboardUrl;
+                    viewDashboardBtn.target = '_blank';  // Open in new tab
+                    
+                    // Update the share link
+                    const shareBtn = document.getElementById('share-btn');
+                    shareBtn.href = dashboardUrl;
+                    shareBtn.target = '_blank';  // Open in new tab
+                    
+                    // Reset button state
+                    generateBtn.disabled = false;
+                    generateBtn.innerHTML = 'Generate Dashboard';
+                })
+                .catch(error => {
+                    alert(`An error occurred while generating the dashboard: ${error.message}`);
+                    
+                    // Reset button state
+                    generateBtn.disabled = false;
+                    generateBtn.innerHTML = 'Generate Dashboard';
+                });
+            }
+            
+            function formatFileSize(bytes) {
+                if (bytes < 1024) return bytes + ' bytes';
+                else if (bytes < 1048576) return (bytes / 1024).toFixed(1) + ' KB';
+                else return (bytes / 1048576).toFixed(1) + ' MB';
+            }
+        });
+    </script>
+</body>
+</html>

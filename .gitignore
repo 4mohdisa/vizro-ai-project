@@ -1,4 +1,5 @@
 .env
 venv/
 property_data.csv
-property_dashboard.py
+Real_Estate_Sales_2001-2022_GL.csv
+*.csv
