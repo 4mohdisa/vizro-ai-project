@@ -175,73 +175,50 @@
             
             <!-- Right Column: Preview -->
             <div class="bg-white p-6 rounded-lg shadow-md">
-                <h2 class="text-lg font-semibold mb-4">3. Dashboard Preview</h2>
+                <h2 class="text-lg font-semibold mb-4">3. Dashboard Access</h2>
                 
                 <!-- Initial State -->
-                <div id="preview-placeholder" class="flex flex-col items-center justify-center h-64 border-2 border-dashed border-gray-300 rounded-lg">
-                    <svg class="h-12 w-12 text-gray-400 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                        <path d="M4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                        <path d="M16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                    </svg>
-                    <p class="text-gray-500">Your dashboard preview will appear here</p>
-                    <p class="text-gray-400 text-sm mt-1">Upload data and select charts to get started</p>
+                <div id="preview-placeholder" class="flex flex-col items-center justify-center h-32 border-2 border-dashed border-gray-300 rounded-lg">
+                    <p class="text-gray-500">Generate a dashboard to get access links</p>
+                    <p class="text-gray-400 text-sm mt-1">Upload data and select charts first</p>
                 </div>
                 
-                <!-- Dashboard Preview -->
+                <!-- Dashboard Links -->
                 <div id="dashboard-preview" class="hidden">
-                    <div class="bg-blue-50 p-6 rounded-lg border border-blue-200 mb-4">
+                    <div class="bg-blue-50 p-4 rounded-lg border border-blue-200 mb-4">
                         <div class="flex items-start">
-                            <svg class="h-6 w-6 text-blue-500 mt-0.5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg class="h-5 w-5 text-blue-500 mt-0.5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
                             </svg>
-                            <div>
-                                <h3 class="text-lg font-medium text-blue-800">Dashboard Generated!</h3>
-                                <p class="text-blue-700 mt-1">Your dashboard has been created with Vizro AI using your data.</p>
-                            </div>
+                            <p class="text-blue-700">Dashboard successfully generated!</p>
                         </div>
                     </div>
                     
-                    <div class="flex flex-col space-y-4 mb-4">
+                    <div class="flex flex-col space-y-3">
+                        <!-- View Dashboard Button -->
                         <a id="view-dashboard-btn" href="#" target="_blank" class="inline-flex items-center justify-center px-4 py-3 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                             <svg class="-ml-1 mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
                                 <path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
                             </svg>
-                            View Interactive Dashboard
+                            Open Dashboard
                         </a>
                         
-                        <div class="flex justify-between">
-                            <a id="share-btn" href="#" class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                                <svg class="-ml-1 mr-2 h-5 w-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
-                                </svg>
-                                Share Dashboard
-                            </a>
-                            <button id="export-btn" class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
-                                <svg class="-ml-1 mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
-                                </svg>
-                                Export Dashboard
-                            </button>
-                        </div>
-                    </div>
-                    
-                    <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
-                        <h4 class="text-sm font-medium text-gray-700 mb-2">Dashboard Features:</h4>
-                        <ul class="text-sm text-gray-600 space-y-1 pl-5 list-disc">
-                            <li>Interactive visualizations generated with Vizro AI</li>
-                            <li>2×2 grid layout with your selected chart types</li>
-                            <li>Data table with all records</li>
-                            <li>Filtering and sorting capabilities</li>
-                            <li>Export options for sharing insights</li>
-                        </ul>
+                        <!-- Download Button -->
+                        <a id="download-btn" href="#" target="_blank" class="inline-flex items-center justify-center px-4 py-3 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+                            <svg class="-ml-1 mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                            </svg>
+                            Download Dashboard
+                        </a>
                     </div>
                 </div>
             </div>
         </div>
     </main>
 
+    <!-- Dashboard Monitoring Script -->
+    <script src="/static/dashboard-monitor.js"></script>
     <script>
         // Wait for DOM to be fully loaded
         window.addEventListener('load', function() {
@@ -444,9 +421,10 @@
                 };
                 
                 // Send to backend to generate dashboard with Vizro AI
-                // Use the relative URL to avoid CORS issues when running in the browser preview
-                const backendUrl = window.location.hostname === '127.0.0.1' ? 
-                    'http://127.0.0.1:8080/generate' : '/generate';
+                // Always use backend port 8000 (where FastAPI uvicorn server is running)
+                const protocol = window.location.protocol;
+                const hostname = window.location.hostname;
+                const backendUrl = `${protocol}//${hostname}:8000/generate`;
                     
                 console.log('Sending request to:', backendUrl);
                 fetch(backendUrl, {
@@ -455,8 +433,8 @@
                         'Content-Type': 'application/json',
                         'Accept': 'application/json'
                     },
-                    credentials: 'omit',  // Don't send credentials for cross-origin requests
-                    mode: 'cors',         // Explicitly request CORS mode
+                    credentials: 'same-origin',  // Use same-origin credentials
+                    mode: 'same-origin',        // Use same-origin mode since we're on the same domain
                     body: JSON.stringify(config)
                 })
                 .then(response => {
@@ -466,29 +444,57 @@
                     return response.json();
                 })
                 .then(data => {
-                    if (!data.url) {
-                        throw new Error('No dashboard URL returned from server');
+                    if (!data.id) {
+                        throw new Error('No dashboard ID returned from server');
                     }
                     
-                    // Show dashboard preview section
+                    // Show dashboard access section
                     previewPlaceholder.classList.add('hidden');
                     dashboardPreview.classList.remove('hidden');
                     
-                    // Set dashboard URL for the view button
-                    const dashboardUrl = data.url;
-                    
-                    // Display a message about the Vizro dashboard
-                    alert('Your dashboard has been generated with Vizro AI! It will open in a new tab.');
+                    // Dashboard URL
+                    const dashboardUrl = `${protocol}//${hostname}:8000/dashboard/${data.id}`;
+                    // Download URL for the dashboard CSV
+                    const downloadUrl = `${protocol}//${hostname}:8000/api/dashboard/${data.id}/data?download=true`;
                     
                     // Update the dashboard link
                     const viewDashboardBtn = document.getElementById('view-dashboard-btn');
                     viewDashboardBtn.href = dashboardUrl;
                     viewDashboardBtn.target = '_blank';  // Open in new tab
                     
-                    // Update the share link
-                    const shareBtn = document.getElementById('share-btn');
-                    shareBtn.href = dashboardUrl;
-                    shareBtn.target = '_blank';  // Open in new tab
+                    // Add diagnostic logging for chart loading process
+                    console.log(`Dashboard generated with ID: ${data.id}`);
+                    console.log(`Selected chart types: ${JSON.stringify(chartSelection)}`);
+                    
+                    // Add event listener to monitor chart loading in the dashboard
+                    viewDashboardBtn.addEventListener('click', function() {
+                        // Log when user opens the dashboard
+                        console.log('Opening dashboard...');
+                        
+                        // After dashboard opens, fetch and log chart data for diagnostics
+                        setTimeout(() => {
+                            for (let i = 0; i < chartSelection.length; i++) {
+                                fetch(`/api/dashboard/${data.id}/chart/${i}`)
+                                    .then(response => response.json())
+                                    .then(chartData => {
+                                        console.log(`Loading chart index ${i}, type: ${chartData?.figure?.data?.[0]?.type || 'unknown'}`);
+                                    })
+                                    .catch(error => console.error(`Error loading chart ${i}:`, error));
+                            }
+                        }, 1000);
+                    });
+                    
+                    // Update the download link
+                    const downloadBtn = document.getElementById('download-btn');
+                    downloadBtn.href = downloadUrl;
+                    downloadBtn.setAttribute('download', `dashboard-${data.id}.csv`);
+                    
+                    // Display toast notification instead of alert
+                    const notification = document.createElement('div');
+                    notification.className = 'fixed bottom-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg';
+                    notification.textContent = 'Dashboard generated successfully!';
+                    document.body.appendChild(notification);
+                    setTimeout(() => notification.remove(), 3000);
                     
                     // Reset button state
                     generateBtn.disabled = false;
