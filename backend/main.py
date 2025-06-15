@@ -1,20 +1,19 @@
 import os
-import json
 import uuid
+import json
 import logging
-import traceback
-from typing import List
 from pathlib import Path
+from typing import List
 
-from fastapi import FastAPI, Request
-from fastapi.responses import HTMLResponse, JSONResponse, FileResponse
+from fastapi import FastAPI, Request, HTTPException
 from fastapi.staticfiles import StaticFiles
-from fastapi.middleware.cors import CORSMiddleware
 from fastapi.templating import Jinja2Templates
-from starlette.middleware.wsgi import WSGIMiddleware
-import uvicorn
+from fastapi.responses import HTMLResponse, FileResponse, JSONResponse
+from fastapi.middleware.cors import CORSMiddleware
+from a2wsgi import WSGIMiddleware
 from pydantic import BaseModel
-import pandas as pd
+
+from . import dashboard_utils
 from vizro import Vizro
 
 # Configure logging
@@ -22,12 +21,6 @@ logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 )
-
-# Import our custom modules
-try:
-    from backend import dashboard_utils
-except ImportError:
-    import dashboard_utils
 
 # Logger for this module
 logger = logging.getLogger(__name__)
@@ -77,6 +70,63 @@ class DashboardRequest(BaseModel):
     columns: int = 2
     data: str
 
+def mount_existing_dashboards():
+    """Mount all existing dashboards as ASGI apps on startup"""
+    try:
+        dashboard_folder = Path(DASHBOARD_FOLDER)
+        if not dashboard_folder.exists():
+            print("Dashboard folder does not exist yet")
+            return
+            
+        for dashboard_dir in dashboard_folder.iterdir():
+            if dashboard_dir.is_dir():
+                dashboard_id = dashboard_dir.name
+                try:
+                    # Try to load and mount the dashboard
+                    dashboard = dashboard_utils.get_dashboard(dashboard_id)
+                    if dashboard:
+                        # Reset Vizro's global state and rebuild the ASGI app
+                        Vizro()._reset()
+                        mount_path = f"/vizro/{dashboard_id}"
+                        print(f"Building Vizro app with url_base_pathname: {mount_path + '/'}")
+                        vizro_app = Vizro(url_base_pathname=mount_path + "/").build(dashboard)
+                        print(f"Vizro app built successfully. Checking attributes...")
+                        
+                        # Mount at the same path as url_base_pathname for clean URL structure
+                        # FastAPI will strip the mount prefix and hand the rest to Dash
+                        if hasattr(vizro_app, 'dash'):
+                            dash_app = vizro_app.dash
+                            # Mount at root-level path for Dash to handle subpath routing
+                            mount_point = f"/vizro-{dashboard_id}"
+                            print(f"Found dash attribute, mounting at {mount_point}")
+                            print(f"Dash app server type: {type(dash_app.server)}")
+                            print(f"Dash app config: {getattr(dash_app, 'config', 'No config attr')}")
+                            app.mount(mount_point, WSGIMiddleware(dash_app.server), name=f"vizro-{dashboard_id}")
+                            print(f"Successfully mounted dashboard at {mount_point}")
+                        elif hasattr(vizro_app, 'server'):
+                            mount_point = f"/vizro-{dashboard_id}"
+                            print(f"Found server attribute, mounting at {mount_point}")
+                            print(f"Server type: {type(vizro_app.server)}")
+                            app.mount(mount_point, WSGIMiddleware(vizro_app.server), name=f"vizro-{dashboard_id}")
+                            print(f"Successfully mounted dashboard at {mount_point}")
+                        else:
+                            print(f"ERROR: Cannot find server attribute for {dashboard_id}")
+                            print(f"Available attributes: {dir(vizro_app)}")
+                        
+                        print(f"Mounted existing dashboard: {dashboard_id} at {mount_point}")
+                    else:
+                        print(f"Failed to load dashboard: {dashboard_id}")
+                except Exception as e:
+                    print(f"Error mounting dashboard {dashboard_id}: {str(e)}")
+                    
+    except Exception as e:
+        print(f"Error mounting existing dashboards: {str(e)}")
+
+@app.on_event("startup")
+async def startup_event():
+    """Mount existing dashboards on startup"""
+    mount_existing_dashboards()
+
 @app.get("/", response_class=HTMLResponse)
 async def index():
     """Serve the main HTML page"""
@@ -88,7 +138,6 @@ async def index():
         else:
             return HTMLResponse(content="<html><body><h1>Welcome to Vizro AI Dashboard Builder</h1><p>The frontend files are not yet installed. Please check the setup instructions.</p></body></html>")
     except Exception as e:
-        traceback.print_exc()
         return HTMLResponse(content=f"<html><body><h1>Error</h1><p>{str(e)}</p></body></html>")
 
 @app.get("/{filename:path}.map")
@@ -101,115 +150,95 @@ async def source_maps(filename: str):
 
 @app.post("/generate")
 async def generate(request: Request):
-    """
-    Handle the generation of a dashboard from CSV data provided in the request.
-    
-    This endpoint expects a POST request with JSON data containing a 'data' field,
-    which holds the CSV data to be used for dashboard creation. A unique dashboard
-    ID is generated for each request, and the dashboard is created synchronously. 
-    The function returns a JSON response with the dashboard ID and success status 
-    or an error message in case of failure.
-    """
+    """Generate a new dashboard from CSV data"""
+    print("=== Starting generate endpoint ===")  
     try:
         data = await request.json()
+        print(f"Received data with keys: {list(data.keys())}")
         
-        if 'data' not in data or not data['data']:
-            return JSONResponse(
-                status_code=400,
-                content={"error": "No data provided"}
-            )
-        
+        # Generate unique dashboard ID
         dashboard_id = uuid.uuid4().hex
+        print(f"Generated dashboard ID: {dashboard_id}")
+        
+        # Create dashboard from the provided configuration
+        print("Creating dashboard from config...")
         result = dashboard_utils.create_dashboard_from_config(data, dashboard_id)
+        print(f"Dashboard creation result: {result.get('success', False)}")
         
         if not result['success']:
-            return JSONResponse(
-                status_code=500,
-                content={"error": f"Error creating dashboard: {result.get('error', 'Unknown error')}"}
-            )
+            raise HTTPException(status_code=500, detail=f"Error creating dashboard: {result.get('error')}")
         
-        return JSONResponse(
-            status_code=200,
-            content={
-                'id': dashboard_id,
-                'success': True
-            }
-        )
+        # Save dashboard config to file
+        dashboard_path = Path(DASHBOARD_FOLDER) / dashboard_id
+        dashboard_path.mkdir(parents=True, exist_ok=True)
+        
+        config_path = dashboard_path / "config.json"
+        with open(config_path, 'w') as f:
+            json.dump(data, f, indent=2)
+        
+        # Save data to CSV file
+        data_path = dashboard_path / "data.csv"
+        with open(data_path, 'w') as f:
+            f.write(data["data"])
+        
+        print("About to reset Vizro and build app...")
+        # Reset Vizro's global state and rebuild the ASGI app
+        Vizro()._reset()
+        mount_path = f"/vizro/{dashboard_id}"
+        print(f"Building Vizro app with url_base_pathname: {mount_path + '/'}")
+        vizro_app = Vizro(url_base_pathname=mount_path + "/").build(result["dashboard"])
+        print(f"Vizro app built successfully. Checking attributes...")
+        
+        # Mount at the same path as url_base_pathname for clean URL structure
+        # FastAPI will strip the mount prefix and hand the rest to Dash
+        if hasattr(vizro_app, 'dash'):
+            dash_app = vizro_app.dash
+            # Mount at root-level path for Dash to handle subpath routing
+            mount_point = f"/vizro-{dashboard_id}"
+            print(f"Found dash attribute, mounting at {mount_point}")
+            print(f"Dash app server type: {type(dash_app.server)}")
+            print(f"Dash app config: {getattr(dash_app, 'config', 'No config attr')}")
+            app.mount(mount_point, WSGIMiddleware(dash_app.server), name=f"vizro-{dashboard_id}")
+            print(f"Successfully mounted dashboard at {mount_point}")
+        elif hasattr(vizro_app, 'server'):
+            mount_point = f"/vizro-{dashboard_id}"
+            print(f"Found server attribute, mounting at {mount_point}")
+            print(f"Server type: {type(vizro_app.server)}")
+            app.mount(mount_point, WSGIMiddleware(vizro_app.server), name=f"vizro-{dashboard_id}")
+            print(f"Successfully mounted dashboard at {mount_point}")
+        else:
+            print(f"ERROR: Cannot find server attribute for {dashboard_id}")
+            print(f"Available attributes: {dir(vizro_app)}")
+        
+        print(f"Dashboard {dashboard_id} process completed")
+        
+        return {"id": dashboard_id, "success": True}
         
     except Exception as e:
-        logger.error(f"Error generating dashboard: {str(e)}")
-        logger.exception("Exception details:")
-        return JSONResponse(
-            status_code=500,
-            content={"error": f"Error generating dashboard: {str(e)}"}
-        )
+        print(f"ERROR in generate endpoint: {str(e)}")
+        import traceback
+        traceback.print_exc()
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/test-mount")
+async def test_mount():
+    """Test endpoint to verify mounting behavior"""
+    return {"message": "Test endpoint working", "mounted_apps": [route.path for route in app.routes if hasattr(route, 'path') and route.path.startswith('/vizro')]}
 
 @app.get("/dashboard/{dashboard_id}", response_class=HTMLResponse)
 async def view_dashboard(request: Request, dashboard_id: str):
     """Serve a dashboard by ID using an iframe wrapper around the Vizro Dash app"""
-    try:
-        # Get dashboard from memory
-        dashboard = dashboard_utils.get_dashboard(dashboard_id)
-        if not dashboard:
-            logger.error(f"Dashboard not found in memory: {dashboard_id}")
-            return templates.TemplateResponse(
-                "error.html", 
-                {"request": request, "error_message": f"Dashboard not found: {dashboard_id}"}
-            )
-        
-        # Log successful dashboard retrieval
-        logger.info(f"Successfully loaded dashboard {dashboard_id} from memory")
-        
-        # Check if we've already mounted this dashboard as a WSGI app
-        dash_path = f"/dash/{dashboard_id}"
-        
-        # Check if this dashboard is already mounted
-        if not any(route.path == dash_path for route in app.routes):
-            try:
-                # Build the Vizro Dash app
-                # Vizro.build() returns the Dashboard object, not a server
-                # We need to use Vizro's _dash_app.server to get the WSGI server
-                Vizro.build(dashboard)
-                
-                # Get the server from Vizro's internal property
-                if hasattr(dashboard, '_dash_app') and hasattr(dashboard._dash_app, 'server'):
-                    dash_server = dashboard._dash_app.server
-                else:
-                    # If dashboard doesn't have _dash_app, use the global Vizro instance
-                    from vizro import Vizro as VizroGlobal
-                    if hasattr(VizroGlobal, '_instance') and hasattr(VizroGlobal._instance, '_dash_app'):
-                        dash_server = VizroGlobal._instance._dash_app.server
-                    else:
-                        raise ValueError("Could not access Dash server from Vizro dashboard")
-                
-                # Mount the Dash app on a dynamic sub-path
-                app.mount(dash_path, WSGIMiddleware(dash_server))
-                logger.info(f"Mounted Vizro dashboard at {dash_path}")
-            except Exception as e:
-                logger.error(f"Error mounting Vizro dashboard: {str(e)}")
-                logger.exception("Mounting exception details:")
-                return templates.TemplateResponse(
-                    "error.html", 
-                    {"request": request, "error_message": f"Error mounting dashboard: {str(e)}"}
-                )
-        
-        # Return a simple HTML wrapper with an iframe pointing to our mounted Dash app
-        return templates.TemplateResponse(
-            "dashboard_iframe.html", 
-            {
-                "request": request, 
-                "dashboard_id": dashboard_id,
-                "dash_url": dash_path,
-                "title": dashboard.pages[0].title if dashboard and dashboard.pages else "Dashboard"
-            }
-        )
-        
-    except Exception as e:
-        logger.error(f"Error viewing dashboard {dashboard_id}: {e}")
-        return templates.TemplateResponse(
-            "error.html", 
-            {"request": request, "error_message": f"Error loading dashboard: {str(e)}"}
-        )
+    # Iframe points to the actual dashboard path within the mounted Dash app
+    dash_url = f"/vizro-{dashboard_id}/vizro/{dashboard_id}/"
+    return templates.TemplateResponse(
+        "dashboard_iframe.html",
+        {
+            "request": request,
+            "title": "Interactive Dashboard",
+            "dashboard_id": dashboard_id,
+            "dash_url": dash_url
+        }
+    )
 
 @app.get("/api/dashboard/{dashboard_id}/export")
 async def dashboard_export(dashboard_id: str):
@@ -221,7 +250,7 @@ async def dashboard_export(dashboard_id: str):
         csv_path = dashboard_path / 'data.csv'
         
         if not config_path.exists():
-            logger.error(f"Dashboard config not found at {config_path}")
+            print(f"Dashboard config not found at {config_path}")
             return JSONResponse(
                 status_code=404,
                 content={"error": "Dashboard not found"}
@@ -231,9 +260,9 @@ async def dashboard_export(dashboard_id: str):
         try:
             with open(config_path, 'r') as f:
                 config = json.load(f)
-            logger.info(f"Successfully loaded config for dashboard {dashboard_id}")
+            print(f"Successfully loaded config for dashboard {dashboard_id}")
         except json.JSONDecodeError as e:
-            logger.error(f"Invalid JSON in config file: {e}")
+            print(f"Invalid JSON in config file: {e}")
             return JSONResponse(
                 status_code=500,
                 content={"error": "Dashboard configuration is corrupted"}
@@ -244,13 +273,13 @@ async def dashboard_export(dashboard_id: str):
             df = pd.read_csv(csv_path)
             sample_data = df.head(5).to_html(classes='table table-striped table-sm')
         except Exception as e:
-            logger.error(f"Error loading CSV data: {e}")
+            print(f"Error loading CSV data: {e}")
             sample_data = "<div class='alert alert-warning'>Error loading data sample</div>"
             
         # Get the dashboard from memory
         dashboard = dashboard_utils.get_dashboard(dashboard_id)
         if not dashboard:
-            logger.error(f"Dashboard not found in memory: {dashboard_id}")
+            print(f"Dashboard not found in memory: {dashboard_id}")
             return JSONResponse(
                 status_code=404,
                 content={"error": "Dashboard not available"}
@@ -296,15 +325,12 @@ async def dashboard_export(dashboard_id: str):
         )
         
     except Exception as e:
-        logger.error(f"Error exporting dashboard {dashboard_id}: {str(e)}")
-        logger.exception("Export exception details:")
+        print(f"Error exporting dashboard {dashboard_id}: {str(e)}")
+        print(f"Export exception details:")
         return JSONResponse(
             status_code=500, 
             content={"error": f"Error generating dashboard export: {str(e)}"}
         )
-
-# The code for individual chart API endpoints has been removed
-# All chart rendering is now handled by the Vizro Dash app mounted at /dash/{dashboard_id}
 
 @app.get("/api/dashboard/{dashboard_id}/csv")
 async def dashboard_csv(dashboard_id: str):
@@ -314,20 +340,20 @@ async def dashboard_csv(dashboard_id: str):
         csv_path = dashboard_path / 'data.csv'
         
         if not csv_path.exists():
-            logger.error(f"Dashboard CSV not found at {csv_path}")
+            print(f"Dashboard CSV not found at {csv_path}")
             return JSONResponse(
                 status_code=404,
                 content={"error": "Dashboard CSV not found"}
             )
         
-        logger.info(f"Serving CSV file for dashboard {dashboard_id}")
+        print(f"Serving CSV file for dashboard {dashboard_id}")
         return FileResponse(
             path=str(csv_path),  # FileResponse requires string path
             media_type='text/csv',
             filename=f"dashboard-{dashboard_id}.csv"
         )
     except Exception as e:
-        logger.error(f"Error retrieving CSV data for dashboard {dashboard_id}: {str(e)}")
+        print(f"Error retrieving CSV data for dashboard {dashboard_id}: {str(e)}")
         return JSONResponse(
             status_code=500,
             content={"error": f"Error retrieving CSV data: {str(e)}"}
@@ -337,4 +363,4 @@ if __name__ == "__main__":
     import uvicorn
     port = int(os.environ.get("PORT", 8081))
     uvicorn.run("main:app", host="0.0.0.0", port=port, reload=True)
-    logger.info(f"🚀 Vizro AI Dashboard Builder running at http://127.0.0.1:{port}")
+    print(f" Vizro AI Dashboard Builder running at http://127.0.0.1:{port}")

@@ -190,6 +190,10 @@ def create_dashboard_from_config(data, dashboard_id):
         dict: Result dictionary containing success status, dashboard object, and error message if any
     """
     try:
+        # Reset Vizro to clear any existing models with stale IDs
+        from vizro import Vizro
+        Vizro._reset()
+        
         # 1. Guard
         csv_data = data.get('data', '')
         if not csv_data:
@@ -250,6 +254,11 @@ def create_dashboard_from_config(data, dashboard_id):
         # 6. Final dashboard
         page = vm.Page(id=f"page_{dashboard_id}", title="Dashboard", components=components)
         dashboard = vm.Dashboard(title="AI Dashboard", pages=[page])
+        
+        # 7. Build the dashboard with Vizro to make it interactive
+        vizro_app = Vizro()
+        vizro_app.build(dashboard)
+        logger.info(f"Successfully built Vizro dashboard {dashboard_id} with {len(components)} components")
 
         return {'success': True, 'dashboard_id': dashboard_id, 'dashboard': dashboard}
         
@@ -285,7 +294,7 @@ def get_dashboard(dashboard_id: str) -> Optional[vm.Dashboard]:
         
         # Load data - handle both absolute and relative paths
         data_path = config.get('data_path')
-        if not os.path.isabs(data_path):
+        if data_path and not os.path.isabs(data_path):
             # If it's a relative path, make it absolute relative to dashboard folder
             data_path = os.path.join(dashboard_path, os.path.basename(data_path))
             
