@@ -60,9 +60,9 @@
                     <p class="text-gray-700 mb-2">Drag and drop your CSV file here</p>
                     <p class="text-gray-500 text-sm">or</p>
                     <input type="file" id="file-input" class="hidden" accept=".csv">
-                    <button id="browse-btn" class="mt-2 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <label for="file-input" class="mt-2 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer inline-block">
                         Browse Files
-                    </button>
+                    </label>
                     <p class="text-xs text-gray-500 mt-2">Maximum file size: 10MB</p>
                 </div>
                 
@@ -217,15 +217,12 @@
         </div>
     </main>
 
-    <!-- Dashboard Monitoring Script -->
-    <script src="/static/dashboard-monitor.js"></script>
     <script>
         // Wait for DOM to be fully loaded
         window.addEventListener('load', function() {
             // DOM Elements
             const dragArea = document.getElementById('drag-area');
             const fileInput = document.getElementById('file-input');
-            const browseBtn = document.getElementById('browse-btn');
             const uploadProgressContainer = document.getElementById('upload-progress-container');
             const uploadProgressBar = document.getElementById('upload-progress-bar');
             const uploadPercentage = document.getElementById('upload-percentage');
@@ -236,13 +233,8 @@
             const dataPreviewContainer = document.getElementById('data-preview-container');
             const previewTable = document.getElementById('preview-table');
             const generateBtn = document.getElementById('generate-btn');
-            const gridLayout = document.getElementById('grid-layout');
-            const gridColumns = document.getElementById('grid-columns');
             const previewPlaceholder = document.getElementById('preview-placeholder');
             const dashboardPreview = document.getElementById('dashboard-preview');
-            const dashboardIframe = document.getElementById('dashboard-iframe');
-            const viewFullBtn = document.getElementById('view-full-btn');
-            const exportBtn = document.getElementById('export-btn');
             const chartOptions = document.querySelectorAll('.chart-option');
             
             // Variables
@@ -250,8 +242,6 @@
             let selectedCharts = [];
             
             // Event Listeners
-            browseBtn.addEventListener('click', () => fileInput.click());
-            
             fileInput.addEventListener('change', function(e) {
                 const file = e.target.files[0];
                 if (file) {
@@ -337,19 +327,13 @@
             }
             
             function simulateUpload() {
-                let progress = 0;
-                const interval = setInterval(() => {
-                    progress += 5;
-                    uploadProgressBar.style.width = `${progress}%`;
-                    uploadPercentage.textContent = `${progress}%`;
-                    
-                    if (progress >= 100) {
-                        clearInterval(interval);
-                        setTimeout(() => {
-                            uploadProgressContainer.classList.add('hidden');
-                        }, 500);
-                    }
-                }, 50);
+                // Show completed progress immediately and hide after brief delay
+                uploadProgressBar.style.width = '100%';
+                uploadPercentage.textContent = '100%';
+                
+                setTimeout(() => {
+                    uploadProgressContainer.classList.add('hidden');
+                }, 500);
             }
             
             function generatePreview(csvData) {
@@ -390,6 +374,7 @@
                         selectedCharts.push(option.value);
                     }
                 });
+                selectedCharts = selectedCharts.slice(0, 4);
                 
                 // Enable/disable generate button
                 generateBtn.disabled = !(fileUploaded && selectedCharts.length > 0);
@@ -406,35 +391,24 @@
                     Generating...
                 `;
                 
-                // Limit to 4 charts maximum as per fixed layout
-                let chartSelection = [...selectedCharts];
-                if (chartSelection.length > 4) {
-                    chartSelection = chartSelection.slice(0, 4);
-                }
-                
                 // Collect configuration with fixed layout settings
                 const config = {
-                    charts: chartSelection,
+                    charts: selectedCharts,
                     layout: 'grid',  // Always use grid layout
                     columns: 2,      // Always use 2 columns
                     data: csvData
                 };
                 
                 // Send to backend to generate dashboard with Vizro AI
-                // Always use backend port 8000 (where FastAPI uvicorn server is running)
-                const protocol = window.location.protocol;
-                const hostname = window.location.hostname;
-                const backendUrl = `${protocol}//${hostname}:8000/generate`;
+                // Use relative URL to automatically use same host and port
+                const backendUrl = '/generate';
                     
                 console.log('Sending request to:', backendUrl);
                 fetch(backendUrl, {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json'
+                        'Content-Type': 'application/json'
                     },
-                    credentials: 'same-origin',  // Use same-origin credentials
-                    mode: 'same-origin',        // Use same-origin mode since we're on the same domain
                     body: JSON.stringify(config)
                 })
                 .then(response => {
@@ -444,52 +418,32 @@
                     return response.json();
                 })
                 .then(data => {
-                    if (!data.id) {
-                        throw new Error('No dashboard ID returned from server');
+                    if (!data.id || data.success !== true) {
+                        throw new Error('No dashboard ID returned from server or operation failed');
                     }
                     
                     // Show dashboard access section
                     previewPlaceholder.classList.add('hidden');
                     dashboardPreview.classList.remove('hidden');
                     
-                    // Dashboard URL
-                    const dashboardUrl = `${protocol}//${hostname}:8000/dashboard/${data.id}`;
-                    // Download URL for the dashboard CSV
-                    const downloadUrl = `${protocol}//${hostname}:8000/api/dashboard/${data.id}/data?download=true`;
+                    // Dashboard URL - use relative path for deployment flexibility
+                    const dashboardUrl = `/dashboard/${data.id}`;
                     
                     // Update the dashboard link
                     const viewDashboardBtn = document.getElementById('view-dashboard-btn');
                     viewDashboardBtn.href = dashboardUrl;
                     viewDashboardBtn.target = '_blank';  // Open in new tab
                     
-                    // Add diagnostic logging for chart loading process
+                    // Add diagnostic logging
                     console.log(`Dashboard generated with ID: ${data.id}`);
-                    console.log(`Selected chart types: ${JSON.stringify(chartSelection)}`);
+                    console.log(`Selected chart types: ${JSON.stringify(selectedCharts)}`);
+                    console.log(`Dashboard URL: ${dashboardUrl}`);
                     
-                    // Add event listener to monitor chart loading in the dashboard
+                    // Add event listener for simple logging
                     viewDashboardBtn.addEventListener('click', function() {
-                        // Log when user opens the dashboard
                         console.log('Opening dashboard...');
-                        
-                        // After dashboard opens, fetch and log chart data for diagnostics
-                        setTimeout(() => {
-                            for (let i = 0; i < chartSelection.length; i++) {
-                                fetch(`/api/dashboard/${data.id}/chart/${i}`)
-                                    .then(response => response.json())
-                                    .then(chartData => {
-                                        console.log(`Loading chart index ${i}, type: ${chartData?.figure?.data?.[0]?.type || 'unknown'}`);
-                                    })
-                                    .catch(error => console.error(`Error loading chart ${i}:`, error));
-                            }
-                        }, 1000);
                     });
                     
-                    // Update the download link
-                    const downloadBtn = document.getElementById('download-btn');
-                    downloadBtn.href = downloadUrl;
-                    downloadBtn.setAttribute('download', `dashboard-${data.id}.csv`);
-                    
-                    // Display toast notification instead of alert
                     const notification = document.createElement('div');
                     notification.className = 'fixed bottom-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg';
                     notification.textContent = 'Dashboard generated successfully!';

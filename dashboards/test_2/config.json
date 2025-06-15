@@ -1,0 +1,1 @@
+{"title": "AI Dashboard", "charts": [{"type": "scatter"}, {"type": "histogram"}, {"type": "bar"}, {"type": "pie"}], "data_path": "/Users/mohammedisa/Development/Web/Vizro-AI/dashboards/test_2/data.csv"}

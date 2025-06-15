@@ -35,16 +35,25 @@ OPENAI_API_KEY=your_api_key_here  # if you want to enable Vizro AI features
 
 ## Running the Application
 
-Start the FastAPI server:
+Start the FastAPI server using one of these methods:
+
+### Method 1: Using Uvicorn directly
 
 ```bash
 cd backend
-uvicorn main:app --reload --port 8080
+uvicorn main:app --host 0.0.0.0 --port 8081 --reload
+```
+
+### Method 2: Using Python module
+
+```bash
+cd backend
+python3 main.py
 ```
 
 Then open your browser and navigate to:
 ```
-http://127.0.0.1:8080
+http://127.0.0.1:8081
 ```
 
 ## Usage
